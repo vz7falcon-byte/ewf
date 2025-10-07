@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Fashion Store</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shopping-bag"></i> Fashion Store</h1>
+            <p>Connectez-vous à votre compte</p>
+        </div>
+
+        <div class="form-container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="id_username">Nom d'utilisateur</label>
+                    <input type="text" name="username" id="id_username" placeholder="Entrez votre nom d'utilisateur" required>
+                    {{ form.username.errors }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password">Mot de passe</label>
+                    <input type="password" name="password" id="id_password" placeholder="Entrez votre mot de passe" required>
+                    {{ form.password.errors }}
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember">
+                        <span>Se souvenir de moi</span>
+                    </label>
+                    <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>OU</span>
+            </div>
+
+            <div class="register-link">
+                Pas encore de compte ? <a href="{% url 'accounts:register' %}">S'inscrire</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

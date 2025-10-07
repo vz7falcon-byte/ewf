@@ -1,0 +1,57 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Produits - Fashion Store{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 40px;">
+    <h1 style="margin-bottom: 30px;">Nos Produits</h1>
+    
+    <!-- Search and Filter -->
+    <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+        <form method="get" style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <input type="text" name="q" placeholder="Rechercher un produit..." 
+                   value="{{ request.GET.q }}" 
+                   style="flex: 1; min-width: 200px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+            
+            <select name="category" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                <option value="">Toutes les catégories</option>
+                {% for category in categories %}
+                    <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit" class="btn">Rechercher</button>
+        </form>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid">
+        {% for product in products %}
+            <div class="product-card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                    <div class="product-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                {% endif %}
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p style="color: #6c757d; font-size: 14px; margin-bottom: 10px;">{{ product.category.name }}</p>
+                    <p class="product-price">{{ product.price }} MAD</p>
+                    <a href="{% url 'store:product_detail' product.slug %}" class="btn">Voir détails</a>
+                </div>
+            </div>
+        {% empty %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                <i class="fas fa-box-open" style="font-size: 64px; color: #ccc; margin-bottom: 20px;"></i>
+                <p style="font-size: 18px; color: #6c757d;">Aucun produit trouvé.</p>
+                <a href="{% url 'store:product_list' %}" class="btn" style="margin-top: 20px;">Voir tous les produits</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

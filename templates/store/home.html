@@ -1,0 +1,25 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Accueil - Fashion Store{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Bienvenue chez Fashion Store</h1>
+        <p>Découvrez notre collection de mode tendance</p>
+        <a href="{% url 'store:product_list' %}" class="btn" style="margin-top: 20px;">
+            Voir les produits
+        </a>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<div class="container">
+    <h2 style="text-align: center; margin-bottom: 30px;">Produits populaires</h2>
+    <div class="products-grid">
+        {% for product in featured_products %}
+            <div class="product-card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
