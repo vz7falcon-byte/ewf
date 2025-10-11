@@ -1,0 +1,122 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Mes Commandes - Fashion Store{% endblock %}
+
+{% block content %}
+<div class="container order-history-container">
+    <h1 class="page-title">
+        <i class="fas fa-history"></i> Mes Commandes
+    </h1>
+
+    {% if orders %}
+        <div class="orders-list">
+            {% for order in orders %}
+                <div class="order-card">
+                    <!-- En-tête de commande -->
+                    <div class="order-header">
+                        <div>
+                            <h3 class="order-number">Commande #{{ order.id }}</h3>
+                            <p class="order-date">
+                                <i class="fas fa-calendar"></i> {{ order.created_at|date:"d/m/Y à H:i" }}
+                            </p>
+                        </div>
+                        <div>
+                            <span class="order-status order-status-{{ order.status }}">
+                                {% if order.status == 'pending' %}
+                                    <i class="fas fa-clock"></i> En attente
+                                {% elif order.status == 'processing' %}
+                                    <i class="fas fa-cog"></i> En préparation
+                                {% elif order.status == 'shipped' %}
+                                    <i class="fas fa-truck"></i> Expédiée
+                                {% elif order.status == 'delivered' %}
+                                    <i class="fas fa-check-circle"></i> Livrée
+                                {% elif order.status == 'cancelled' %}
+                                    <i class="fas fa-times-circle"></i> Annulée
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Articles de la commande -->
+                    <div class="order-items">
+                        {% for item in order.items.all %}
+                            <div class="order-item {% if not forloop.last %}order-item-border{% endif %}">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="order-item-image">
+                                {% else %}
+                                    <div class="order-item-placeholder">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="order-item-info">
+                                    <p class="order-item-name">{{ item.product.name }}</p>
+                                    <p class="order-item-quantity">
+                                        Quantité: {{ item.quantity }} × {{ item.price }} DH
+                                    </p>
+                                </div>
+                                <strong class="order-item-total">{{ item.get_total }} DH</strong>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Détails et récapitulatif -->
+                    <div class="order-details">
+                        <div class="order-delivery">
+                            <h4 class="order-section-title">
+                                <i class="fas fa-map-marker-alt"></i> Adresse de livraison
+                            </h4>
+                            <div class="order-address-box">
+                                <p class="address-name">{{ order.full_name }}</p>
+                                <p class="address-line">{{ order.address }}</p>
+                                <p class="address-line">{{ order.postal_code }} {{ order.city }}</p>
+                                <p class="address-line">
+                                    <i class="fas fa-phone"></i> {{ order.phone }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="order-summary">
+                            <h4 class="order-section-title">
+                                <i class="fas fa-receipt"></i> Récapitulatif
+                            </h4>
+                            <div class="order-summary-box">
+                                <p class="summary-label">Mode de paiement</p>
+                                <p class="summary-payment">
+                                    <i class="fas fa-hand-holding-usd"></i> À la livraison
+                                </p>
+                                <hr class="summary-divider">
+                                <p class="summary-total-line">
+                                    Total: <strong class="summary-total-amount">{{ order.total }} DH</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if order.notes %}
+                        <div class="order-notes">
+                            <strong class="notes-title">
+                                <i class="fas fa-comment"></i> Notes:
+                            </strong>
+                            <p class="notes-content">{{ order.notes }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-orders">
+            <div class="empty-icon">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h3 class="empty-title">Aucune commande</h3>
+            <p class="empty-text">
+                Vous n'avez pas encore passé de commande.
+            </p>
+            <a href="{% url 'store:product_list' %}" class="btn">
+                <i class="fas fa-shopping-bag"></i> Découvrir nos produits
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

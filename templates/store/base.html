@@ -20,13 +20,13 @@
                 <li><a href="{% url 'store:product_list' %}" class="nav-link">Produits</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'store:order_history' %}" class="nav-link">Mes commandes</a></li>
-                    <li><a href="{% url 'accounts:logout' %}" class="nav-link">Déconnexion</a></li>
+                    <li><a href="{% url 'accounts:login' %}" class="nav-link">Déconnexion</a></li>
                 {% else %}
                     <li><a href="{% url 'accounts:login' %}" class="nav-link">Connexion</a></li>
                     <li><a href="{% url 'accounts:register' %}" class="nav-link">Inscription</a></li>
                 {% endif %}
                 <li>
-                    <a href="{% url 'store:cart' %}" class="nav-link">
+                    <a href="{% url 'store:cart_detail' %}" class="nav-link">
                         <i class="fas fa-shopping-cart"></i> Panier
                         {% if request.session.cart_count %}
                             <span class="cart-badge">{{ request.session.cart_count }}</span>

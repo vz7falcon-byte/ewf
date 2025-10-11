@@ -1,0 +1,41 @@
+{% extends 'store/base.html' %}
+{% block title %}Mon Panier{% endblock %}
+{% block content %}
+<div class="container" style="margin-top: 40px;">
+    <h1>Mon Panier</h1>
+
+    {% if items %}
+        <table class="table table-striped" style="margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix</th>
+                    <th>Sous-total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.price }} MAD</td>
+                    <td>{{ item.get_subtotal }} MAD</td>
+                    <td>
+                        <a href="{% url 'store:remove_from_cart' item.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Total : {{ total }} MAD</h3>
+        <a href="{% url 'store:checkout' %}" class="btn btn-success">Passer la commande</a>
+
+    {% else %}
+        <p>Votre panier est vide.</p>
+        <a href="{% url 'store:product_list' %}" class="btn btn-primary">Voir les produits</a>
+    {% endif %}
+</div>
+{% endblock %}

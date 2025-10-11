@@ -1,10 +1,5 @@
-{% extends 'store/base.html' %}
-{% load static %}
+/* static/css/home.css */
 
-{% block title %}Fashion Store - Votre Boutique de Mode en Ligne{% endblock %}
-
-{% block content %}
-<style>
 :root {
     --primary: #667eea;
     --primary-dark: #5568d3;
@@ -16,6 +11,13 @@
     --text-light: #6b7280;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Hero Section */
 .hero-section {
     position: relative;
     min-height: 600px;
@@ -25,6 +27,18 @@
     justify-content: center;
     overflow: hidden;
     padding: 80px 20px;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') bottom center no-repeat;
+    background-size: cover;
+    opacity: 0.3;
 }
 
 .hero-overlay {
@@ -98,6 +112,7 @@
 .btn-primary:hover {
     transform: translateY(-3px);
     box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    color: var(--primary-dark);
 }
 
 .btn-secondary {
@@ -149,6 +164,7 @@
     opacity: 0.9;
 }
 
+/* Features Section */
 .features-section {
     padding: 80px 20px;
     background: var(--light);
@@ -203,8 +219,10 @@
 .feature-card p {
     color: var(--text-light);
     font-size: 15px;
+    line-height: 1.6;
 }
 
+/* Products Section */
 .products-section {
     padding: 80px 20px;
     background: white;
@@ -318,6 +336,12 @@
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
 
 .product-info {
@@ -329,12 +353,14 @@
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 10px;
+    line-height: 1.4;
 }
 
 .product-description {
     font-size: 14px;
     color: var(--text-light);
     margin-bottom: 20px;
+    line-height: 1.6;
 }
 
 .product-footer {
@@ -349,6 +375,7 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .btn-add-cart {
@@ -364,6 +391,12 @@
     text-decoration: none;
 }
 
+.btn-add-cart:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Empty State */
 .empty-products {
     grid-column: 1 / -1;
     text-align: center;
@@ -371,8 +404,26 @@
     color: var(--text-light);
 }
 
+.empty-products svg {
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-products h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.empty-products p {
+    font-size: 1rem;
+}
+
+/* Section CTA */
 .section-cta {
     text-align: center;
+    margin-top: 20px;
 }
 
 .btn-view-all {
@@ -386,15 +437,48 @@
     font-size: 16px;
     font-weight: 700;
     text-decoration: none;
+    transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
+.btn-view-all:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* CTA Section */
 .cta-section {
     padding: 100px 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.cta-section::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
 }
 
 .cta-content {
+    position: relative;
+    z-index: 2;
     text-align: center;
     max-width: 700px;
     margin: 0 auto;
@@ -430,7 +514,19 @@
     border-radius: 50px;
     font-size: 15px;
     background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
     color: white;
+    transition: all 0.3s ease;
+}
+
+.cta-input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+.cta-input:focus {
+    outline: none;
+    border-color: white;
+    background: rgba(255,255,255,0.2);
 }
 
 .cta-button {
@@ -442,127 +538,102 @@
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+/* Animations */
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
-    .hero-title { font-size: 2.5rem; }
-    .section-title { font-size: 2rem; }
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.125rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+    
+    .hero-stats {
+        gap: 30px;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .product-image-wrapper {
+        height: 250px;
+    }
+    
+    .cta-content h2 {
+        font-size: 2rem;
+    }
+    
+    .cta-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .cta-input {
+        width: 100%;
+    }
+    
+    .cta-button {
+        width: 100%;
+    }
 }
-</style>
 
-<section class="hero-section">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <span class="hero-badge">Nouvelle Collection 2025</span>
-        <h1 class="hero-title">Découvrez l'Élégance</h1>
-        <p class="hero-subtitle">Mode tendance et accessoires exclusifs pour vous</p>
-        <div class="hero-buttons">
-            <a href="{% url 'store:product_list' %}" class="btn-primary">
-                Découvrir la Collection
-            </a>
-            <a href="#features" class="btn-secondary">En savoir plus</a>
-        </div>
-    </div>
-    <div class="hero-stats">
-        <div class="stat-item">
-            <div class="stat-number">1000+</div>
-            <div class="stat-label">Produits</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">5000+</div>
-            <div class="stat-label">Clients satisfaits</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">100%</div>
-            <div class="stat-label">Sécurisé</div>
-        </div>
-    </div>
-</section>
-
-<section class="features-section" id="features">
-    <div class="container">
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🚚</div>
-                <h3>Livraison Gratuite</h3>
-                <p>Sur toutes les commandes au Maroc</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <h3>Paiement Sécurisé</h3>
-                <p>Vos transactions sont protégées</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⭐</div>
-                <h3>Qualité Garantie</h3>
-                <p>Produits authentiques et de qualité</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📞</div>
-                <h3>Support 24/7</h3>
-                <p>Notre équipe à votre service</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="products-section">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Produits Populaires</h2>
-            <p class="section-subtitle">Découvrez nos articles les plus tendance</p>
-        </div>
-        
-        <div class="products-grid">
-            {% for product in featured_products %}
-            <div class="product-card">
-                <div class="product-image-wrapper">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                    {% else %}
-                        <div class="product-placeholder">📷</div>
-                    {% endif %}
-                    <div class="product-badge">Nouveau</div>
-                    <div class="product-overlay">
-                        <a href="{% url 'store:product_detail' product.id %}" class="btn-view">Voir détails</a>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-name">{{ product.name }}</h3>
-                    <p class="product-description">{{ product.description|truncatewords:10 }}</p>
-                    <div class="product-footer">
-                        <span class="product-price">{{ product.price }} MAD</span>
-                        <a href="{% url 'store:product_detail' product.id %}" class="btn-add-cart">🛒</a>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="empty-products">
-                <h3>Aucun produit disponible</h3>
-                <p>Revenez bientôt pour découvrir nos nouveautés</p>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <div class="section-cta">
-            <a href="{% url 'store:product_list' %}" class="btn-view-all">Voir tous les produits</a>
-        </div>
-    </div>
-</section>
-
-<section class="cta-section">
-    <div class="cta-content">
-        <h2>Rejoignez notre communauté</h2>
-        <p>Inscrivez-vous pour recevoir les dernières nouveautés</p>
-        <div class="cta-form">
-            <input type="email" placeholder="Votre adresse email" class="cta-input">
-            <button class="cta-button">S'inscrire</button>
-        </div>
-    </div>
-</section>
-{% endblock %}
+@media (max-width: 480px) {
+    .hero-section {
+        min-height: 500px;
+        padding: 60px 15px;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+}

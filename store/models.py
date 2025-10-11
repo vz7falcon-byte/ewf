@@ -1,8 +1,4 @@
 from django.db import models
-
-# Create your models here.
-# store/models.py
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
@@ -52,27 +48,47 @@ class Product(models.Model):
 
 
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='carts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='carts', null=True, blank=True)
+    session_key = models.CharField(max_length=40, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        # Éviter les doublons de paniers
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'session_key'],
+                name='unique_cart_per_user_session'
+            )
+        ]
+
     def __str__(self):
-        return f"Cart {self.id} - {self.user.username}"
+        if self.user and self.user.username != 'guest':
+            return f"Cart {self.id} - {self.user.username}"
+        return f"Cart {self.id} - Invité"
 
     def get_total(self):
         return sum(item.get_subtotal() for item in self.items.all())
 
+    def get_item_count(self):
+        return sum(item.quantity for item in self.items.all())
+
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.quantity} x {self.product.name}"
+    class Meta:
+        # Éviter d'avoir le même produit plusieurs fois dans le même panier
+        unique_together = ['cart', 'product']
 
     def get_subtotal(self):
         return self.product.price * self.quantity
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name}"
 
 
 class Order(models.Model):
