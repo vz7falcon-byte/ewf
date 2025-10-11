@@ -6,24 +6,30 @@
 {% block content %}
 <style>
 :root {
-    --primary: #667eea;
-    --primary-dark: #5568d3;
-    --success: #10b981;
-    --danger: #ef4444;
-    --border: #e5e7eb;
-    --dark: #1f2937;
-    --light-gray: #6b7280;
-    --bg-light: #f9fafb;
+    --primary: #000000;
+    --accent: #c9a961;
+    --bg-dark: #0a0a0a;
+    --bg-light: #ffffff;
+    --text-dark: #000000;
+    --text-light: #666666;
+    --border: #e8e8e8;
+    --success: #166534;
 }
 
-.product-wrapper {
-    background: linear-gradient(135deg, #f0f4ff 0%, #fef3f8 100%);
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.product-page {
+    padding-top: 140px;
     min-height: 100vh;
-    padding: 60px 0;
+    background: #fafafa;
+    padding-bottom: 120px;
 }
 
 .product-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -32,371 +38,553 @@
 .breadcrumb {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 30px;
-    font-size: 14px;
-    color: var(--light-gray);
+    gap: 12px;
+    margin-bottom: 60px;
+    font-size: 12px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0;
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .breadcrumb a {
-    color: var(--primary);
+    color: var(--text-light);
     text-decoration: none;
-    transition: color 0.3s;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.breadcrumb a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--primary);
+    transition: width 0.3s ease;
 }
 
 .breadcrumb a:hover {
-    color: var(--primary-dark);
+    color: var(--primary);
 }
 
-/* Product Detail Grid */
-.product-detail-grid {
+.breadcrumb a:hover::after {
+    width: 100%;
+}
+
+.breadcrumb-separator {
+    color: var(--border);
+}
+
+/* Product Grid */
+.product-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    background: white;
-    border-radius: 24px;
-    padding: 50px;
-    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-    animation: fadeIn 0.6s ease-out;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 100px;
+    align-items: start;
 }
 
+/* Image Section */
 .product-image-section {
     position: relative;
+    opacity: 0;
+    animation: fadeInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.2s;
+}
+
+.product-main-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 700px;
+    background: white;
+    overflow: hidden;
+    cursor: zoom-in;
 }
 
 .product-main-image {
     width: 100%;
-    height: 600px;
+    height: 100%;
     object-fit: cover;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-main-image-wrapper:hover .product-main-image {
+    transform: scale(1.05);
 }
 
 .product-image-placeholder {
     width: 100%;
-    height: 600px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
+    height: 700px;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--text-light);
     font-size: 120px;
 }
 
 .product-badge {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 10px 20px;
-    background: var(--success);
-    color: white;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 14px;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    top: 30px;
+    right: 30px;
+    padding: 12px 25px;
+    background: var(--primary);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    z-index: 10;
+    animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.8s;
+    opacity: 0;
 }
 
-.product-info-section {
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Zoom Overlay */
+.zoom-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.98);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+    cursor: zoom-out;
+}
+
+.zoom-overlay.active {
     display: flex;
-    flex-direction: column;
-    gap: 25px;
+}
+
+.zoom-image {
+    max-width: 90%;
+    max-height: 90vh;
+    object-fit: contain;
+    animation: zoomIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Info Section */
+.product-info-section {
+    position: sticky;
+    top: 140px;
+    opacity: 0;
+    animation: fadeInRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.4s;
 }
 
 .product-category {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: var(--bg-light);
-    border-radius: 50px;
-    color: var(--light-gray);
-    font-size: 14px;
-    font-weight: 600;
-    width: fit-content;
+    display: inline-block;
+    font-size: 11px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    font-weight: 500;
 }
 
 .product-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--dark);
-    line-height: 1.2;
-    margin: 0;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 200;
+    color: var(--text-dark);
+    margin-bottom: 30px;
+    letter-spacing: -2px;
+    line-height: 1.1;
 }
 
 .product-rating {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+    margin-bottom: 35px;
 }
 
 .stars {
-    color: #fbbf24;
-    font-size: 18px;
+    display: flex;
+    gap: 5px;
+    color: var(--accent);
+    font-size: 16px;
 }
 
 .rating-text {
-    color: var(--light-gray);
-    font-size: 14px;
+    color: var(--text-light);
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
 }
 
 .product-price {
-    font-size: 3rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 0;
+    font-size: 48px;
+    font-weight: 200;
+    color: var(--text-dark);
+    margin-bottom: 40px;
+    letter-spacing: -1px;
 }
 
-.price-original {
-    font-size: 1.5rem;
-    color: var(--light-gray);
-    text-decoration: line-through;
-    font-weight: 500;
+.price-currency {
+    font-size: 20px;
+    color: var(--text-light);
+    font-weight: 300;
+    margin-left: 8px;
 }
 
 .description-section {
-    padding: 25px;
-    background: var(--bg-light);
-    border-radius: 16px;
-    border-left: 4px solid var(--primary);
+    padding: 35px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
 }
 
 .description-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--dark);
-    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .description-text {
-    color: var(--light-gray);
-    line-height: 1.8;
+    color: var(--text-light);
+    line-height: 2;
     font-size: 15px;
+    font-weight: 300;
+    letter-spacing: 0.3px;
 }
 
 .stock-info {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 16px 20px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 15px;
+    padding: 12px 20px;
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 40px;
 }
 
 .in-stock {
-    background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
-    color: #166534;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    color: var(--success);
+    border-left: 3px solid var(--success);
 }
 
 .out-of-stock {
     background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
     color: #991b1b;
+    border-left: 3px solid #991b1b;
 }
 
-/* Add to Cart Form */
+/* Cart Form */
 .cart-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 30px;
-    background: var(--bg-light);
-    border-radius: 16px;
-    margin-top: 10px;
+    margin-bottom: 50px;
 }
 
 .quantity-section {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
 .quantity-label {
-    font-weight: 700;
-    color: var(--dark);
-    font-size: 16px;
+    font-size: 12px;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
 }
 
-.quantity-input {
-    width: 80px;
-    padding: 12px;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 700;
-    text-align: center;
-    transition: all 0.3s;
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid var(--border);
+    transition: all 0.4s ease;
 }
 
-.quantity-input:focus {
-    outline: none;
+.quantity-controls:hover {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.qty-btn {
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: transparent;
+    color: var(--text-dark);
+    font-size: 20px;
+    font-weight: 200;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.qty-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--primary);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+}
+
+.qty-btn:hover::after {
+    transform: scaleY(1);
+}
+
+.qty-btn:hover {
+    color: var(--bg-light);
+}
+
+.qty-display {
+    width: 80px;
+    text-align: center;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--text-dark);
+    letter-spacing: 1px;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    padding: 12px 0;
 }
 
 .add-to-cart-btn {
     width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    padding: 22px;
+    background: var(--primary);
+    color: var(--accent);
     border: none;
-    border-radius: 14px;
-    font-size: 1.125rem;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.add-to-cart-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--accent);
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+}
+
+.add-to-cart-btn:hover::before {
+    left: 0;
 }
 
 .add-to-cart-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+    color: var(--primary);
 }
 
-.add-to-cart-btn:active {
-    transform: translateY(-1px);
+.add-to-cart-btn span {
+    position: relative;
+    z-index: 1;
 }
 
+.add-to-cart-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Features Grid */
 .features-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-top: 20px;
+    gap: 20px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
 }
 
 .feature-item {
     text-align: center;
-    padding: 15px;
+    padding: 25px 15px;
     background: white;
-    border-radius: 12px;
-    border: 2px solid var(--border);
+    transition: all 0.4s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .feature-icon {
     font-size: 28px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+    transition: all 0.4s ease;
+}
+
+.feature-item:hover .feature-icon {
+    color: var(--accent);
+    transform: scale(1.1);
 }
 
 .feature-text {
-    font-size: 12px;
-    color: var(--light-gray);
-    font-weight: 600;
+    font-size: 11px;
+    color: var(--text-light);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
 }
 
 /* Related Products */
 .related-section {
-    margin-top: 80px;
+    margin-top: 120px;
+    padding-top: 80px;
+    border-top: 2px solid var(--border);
 }
 
 .section-title {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--dark);
-    margin-bottom: 40px;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 200;
+    color: var(--text-dark);
+    margin-bottom: 60px;
     text-align: center;
+    letter-spacing: -1px;
 }
 
 .related-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 40px;
 }
 
 .related-card {
     background: white;
-    border-radius: 20px;
     overflow: hidden;
-    transition: all 0.3s ease;
-    border: 2px solid var(--border);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.related-card.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .related-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-    border-color: var(--primary);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
 }
 
 .related-image-wrapper {
     position: relative;
     width: 100%;
-    height: 280px;
+    height: 400px;
     overflow: hidden;
+    background: #f5f5f5;
 }
 
 .related-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .related-card:hover .related-image {
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
 .related-placeholder {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--text-light);
     font-size: 60px;
 }
 
 .related-info {
-    padding: 25px;
+    padding: 35px 30px;
 }
 
 .related-name {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--dark);
-    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
 }
 
 .related-price {
-    font-size: 1.5rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: 200;
+    color: var(--text-dark);
+    margin-bottom: 25px;
+    letter-spacing: -0.5px;
 }
 
 .view-btn {
     width: 100%;
-    padding: 12px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
+    padding: 16px;
+    background: transparent;
+    color: var(--text-dark);
+    border: 1px solid var(--border);
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    transition: all 0.3s ease;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.4s ease;
 }
 
 .view-btn:hover {
-    background: var(--primary-dark);
+    background: var(--primary);
+    color: var(--accent);
+    border-color: var(--primary);
     transform: translateY(-2px);
-    color: white;
 }
 
 /* Animations */
-@keyframes fadeIn {
+@keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
@@ -404,27 +592,48 @@
     }
 }
 
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 /* Responsive */
 @media (max-width: 992px) {
-    .product-detail-grid {
+    .product-grid {
         grid-template-columns: 1fr;
-        gap: 40px;
-        padding: 35px;
+        gap: 60px;
     }
     
-    .product-main-image,
-    .product-image-placeholder {
-        height: 450px;
+    .product-info-section {
+        position: relative;
+        top: 0;
+    }
+    
+    .related-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     }
 }
 
 @media (max-width: 768px) {
-    .product-wrapper {
-        padding: 40px 0;
-    }
-    
-    .product-detail-grid {
-        padding: 25px;
+    .product-page {
+        padding-top: 110px;
     }
     
     .product-title {
@@ -432,12 +641,12 @@
     }
     
     .product-price {
-        font-size: 2.5rem;
+        font-size: 36px;
     }
     
-    .product-main-image,
+    .product-main-image-wrapper,
     .product-image-placeholder {
-        height: 350px;
+        height: 500px;
     }
     
     .features-grid {
@@ -450,100 +659,126 @@
 }
 
 @media (max-width: 480px) {
-    .product-title {
-        font-size: 1.75rem;
+    .product-page {
+        padding-bottom: 80px;
     }
     
-    .product-price {
-        font-size: 2rem;
+    .product-grid {
+        gap: 40px;
     }
     
-    .cart-form {
-        padding: 20px;
+    .breadcrumb {
+        margin-bottom: 40px;
+    }
+    
+    .product-main-image-wrapper,
+    .product-image-placeholder {
+        height: 400px;
+    }
+    
+    .quantity-section {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 </style>
 
-<div class="product-wrapper">
+<div class="product-page">
     <div class="product-container">
         <!-- Breadcrumb -->
-        <div class="breadcrumb">
+        <nav class="breadcrumb">
             <a href="{% url 'store:home' %}">Accueil</a>
-            <span>›</span>
-            <a href="{% url 'store:product_list' %}">Produits</a>
-            <span>›</span>
+            <span class="breadcrumb-separator">/</span>
+            <a href="{% url 'store:product_list' %}">Collection</a>
+            <span class="breadcrumb-separator">/</span>
             <span>{{ product.name }}</span>
-        </div>
+        </nav>
 
-        <!-- Product Detail -->
-        <div class="product-detail-grid">
+        <!-- Product Grid -->
+        <div class="product-grid">
             <!-- Image Section -->
             <div class="product-image-section">
-                {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-main-image">
-                {% else %}
-                    <div class="product-image-placeholder">
-                        👕
-                    </div>
-                {% endif %}
-                {% if product.stock > 0 %}
-                    <div class="product-badge">✨ Disponible</div>
-                {% endif %}
+                <div class="product-main-image-wrapper" id="imageWrapper">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-main-image" id="mainImage">
+                    {% else %}
+                        <div class="product-image-placeholder">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                    {% endif %}
+                    {% if product.stock > 0 %}
+                        <div class="product-badge">Disponible</div>
+                    {% else %}
+                        <div class="product-badge" style="background: #991b1b;">Rupture</div>
+                    {% endif %}
+                </div>
             </div>
 
             <!-- Info Section -->
             <div class="product-info-section">
                 <div class="product-category">
-                    🏷️ {{ product.category.name }}
+                    {{ product.category.name }}
                 </div>
 
                 <h1 class="product-title">{{ product.name }}</h1>
 
                 <div class="product-rating">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
-                    <span class="rating-text">(4.8/5 - 124 avis)</span>
+                    <div class="stars" id="ratingStars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <span class="rating-text">(4.8/5 · 124 avis)</span>
                 </div>
 
-                <div>
-                    <h2 class="product-price">{{ product.price }} MAD</h2>
+                <div class="product-price">
+                    {{ product.price }}<span class="price-currency">MAD</span>
                 </div>
 
                 <div class="description-section">
-                    <h3 class="description-title">📝 Description</h3>
+                    <h3 class="description-title">Description</h3>
                     <p class="description-text">{{ product.description }}</p>
                 </div>
 
                 <div class="stock-info {% if product.stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
                     {% if product.stock > 0 %}
-                        ✅ En stock ({{ product.stock }} disponible{{ product.stock|pluralize }})
+                        <i class="fas fa-check-circle"></i>
+                        En stock ({{ product.stock }} disponible{{ product.stock|pluralize }})
                     {% else %}
-                        ❌ Rupture de stock
+                        <i class="fas fa-times-circle"></i>
+                        Rupture de stock
                     {% endif %}
                 </div>
 
                 {% if product.stock > 0 %}
-                    <form method="post" action="{% url 'store:add_to_cart' product.slug %}" class="cart-form">
+                    <form method="post" action="{% url 'store:add_to_cart' product.slug %}" class="cart-form" id="cartForm">
                         {% csrf_token %}
                         <div class="quantity-section">
-                            <label for="id_quantity" class="quantity-label">Quantité :</label>
-                            {{ form.quantity }}
+                            <label class="quantity-label">Quantité</label>
+                            <div class="quantity-controls">
+                                <button type="button" class="qty-btn" id="decreaseBtn">−</button>
+                                <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-display" id="qtyInput" readonly>
+                                <button type="button" class="qty-btn" id="increaseBtn">+</button>
+                            </div>
                         </div>
-                        <button type="submit" class="add-to-cart-btn">
-                            🛒 Ajouter au panier
+                        <button type="submit" class="add-to-cart-btn" id="addToCartBtn">
+                            <span>Ajouter au panier</span>
                         </button>
                     </form>
 
                     <div class="features-grid">
                         <div class="feature-item">
-                            <div class="feature-icon">🚚</div>
+                            <div class="feature-icon"><i class="fas fa-truck"></i></div>
                             <div class="feature-text">Livraison gratuite</div>
                         </div>
                         <div class="feature-item">
-                            <div class="feature-icon">↩️</div>
+                            <div class="feature-icon"><i class="fas fa-undo"></i></div>
                             <div class="feature-text">Retour facile</div>
                         </div>
                         <div class="feature-item">
-                            <div class="feature-icon">🔒</div>
+                            <div class="feature-icon"><i class="fas fa-lock"></i></div>
                             <div class="feature-text">Paiement sécurisé</div>
                         </div>
                     </div>
@@ -554,7 +789,7 @@
         <!-- Related Products -->
         {% if related_products %}
             <div class="related-section">
-                <h2 class="section-title">✨ Produits similaires</h2>
+                <h2 class="section-title">Produits Similaires</h2>
                 <div class="related-grid">
                     {% for related in related_products %}
                         <div class="related-card">
@@ -562,7 +797,9 @@
                                 {% if related.image %}
                                     <img src="{{ related.image.url }}" alt="{{ related.name }}" class="related-image">
                                 {% else %}
-                                    <div class="related-placeholder">👕</div>
+                                    <div class="related-placeholder">
+                                        <i class="fas fa-tshirt"></i>
+                                    </div>
                                 {% endif %}
                             </div>
                             <div class="related-info">
@@ -579,4 +816,535 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Zoom Overlay -->
+<div class="zoom-overlay" id="zoomOverlay">
+    <img src="" alt="" class="zoom-image" id="zoomImage">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Quantity Controls
+    const qtyInput = document.getElementById('qtyInput');
+    const decreaseBtn = document.getElementById('decreaseBtn');
+    const increaseBtn = document.getElementById('increaseBtn');
+    const maxQty = parseInt(qtyInput.max);
+    
+    if (decreaseBtn && increaseBtn && qtyInput) {
+        decreaseBtn.addEventListener('click', function() {
+            let currentValue = parseInt(qtyInput.value);
+            if (currentValue > 1) {
+                qtyInput.value = currentValue - 1;
+                animateNumber(qtyInput);
+            }
+        });
+        
+        increaseBtn.addEventListener('click', function() {
+            let currentValue = parseInt(qtyInput.value);
+            if (currentValue < maxQty) {
+                qtyInput.value = currentValue + 1;
+                animateNumber(qtyInput);
+            }
+        });
+    }
+    
+    function animateNumber(input) {
+        input.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            input.style.transform = 'scale(1)';
+        }, 200);
+    }
+    
+    // Image Zoom
+    const imageWrapper = document.getElementById('imageWrapper');
+    const mainImage = document.getElementById('mainImage');
+    const zoomOverlay = document.getElementById('zoomOverlay');
+    const zoomImage = document.getElementById('zoomImage');
+    
+    if (imageWrapper && mainImage && zoomOverlay && zoomImage) {
+        imageWrapper.addEventListener('click', function() {
+            zoomImage.src = mainImage.src;
+            zoomOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        zoomOverlay.addEventListener('click', function() {
+            this.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+    
+    // Add to Cart Animation
+    const cartForm = document.getElementById('cartForm');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    
+    if (cartForm && addToCartBtn) {
+        cartForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Animation du bouton
+            addToCartBtn.innerHTML = '<span>Ajout en cours...</span>';
+            addToCartBtn.disabled = true;
+            
+            // Créer une particule qui vole vers le panier
+            const btnRect = addToCartBtn.getBoundingClientRect();
+            const cartIcon = document.querySelector('.nav-link.cart');
+            
+            if (cartIcon) {
+                const cartRect = cartIcon.getBoundingClientRect();
+                const particle = document.createElement('div');
+                
+                particle.style.cssText = `
+                    position: fixed;
+                    left: ${btnRect.left + btnRect.width / 2}px;
+                    top: ${btnRect.top + btnRect.height / 2}px;
+                    width: 20px;
+                    height: 20px;
+                    background: var(--accent);
+                    border-radius: 50%;
+                    z-index: 10000;
+                    pointer-events: none;
+                `;
+                
+                document.body.appendChild(particle);
+                
+                // Animer vers le panier
+                const animation = particle.animate([
+                    {
+                        left: `${btnRect.left + btnRect.width / 2}px`,
+                        top: `${btnRect.top + btnRect.height / 2}px`,
+                        opacity: 1,
+                        transform: 'scale(1)'
+                    },
+                    {
+                        left: `${cartRect.left + cartRect.width / 2}px`,
+                        top: `${cartRect.top + cartRect.height / 2}px`,
+                        opacity: 0,
+                        transform: 'scale(0.3)'
+                    }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                });
+                
+                animation.onfinish = () => {
+                    particle.remove();
+                    
+                    // Animation du badge panier
+                    if (cartIcon) {
+                        cartIcon.style.animation = 'none';
+                        setTimeout(() => {
+                            cartIcon.style.animation = 'cartBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                        }, 10);
+                    }
+                    
+                    // Soumettre le formulaire
+                    cartForm.submit();
+                };
+            } else {
+                // Si pas d'icône panier, soumettre directement
+                setTimeout(() => {
+                    cartForm.submit();
+                }, 600);
+            }
+        });
+    }
+    
+    // Ajouter l'animation du panier
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes cartBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Rating Stars Animation
+    const ratingStars = document.getElementById('ratingStars');
+    if (ratingStars) {
+        const stars = ratingStars.querySelectorAll('i');
+        stars.forEach((star, index) => {
+            star.style.opacity = '0';
+            star.style.transform = 'scale(0) rotate(-180deg)';
+            star.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            
+            setTimeout(() => {
+                star.style.opacity = '1';
+                star.style.transform = 'scale(1) rotate(0deg)';
+            }, 1000 + (index * 100));
+        });
+        
+        // Hover effect sur les étoiles
+        stars.forEach(star => {
+            star.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.2) rotate(360deg)';
+            });
+            
+            star.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    }
+    
+    // Parallax effect on image
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                const scrolled = window.pageYOffset;
+                if (mainImage && window.innerWidth > 992) {
+                    const offset = scrolled * 0.05;
+                    mainImage.style.transform = `translateY(${offset}px) scale(1.1)`;
+                }
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+    
+    // Intersection Observer pour les cartes related
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.classList.add('visible');
+                }, index * 150);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.related-card').forEach(card => {
+        observer.observe(card);
+    });
+    
+    // Mouse move effect sur l'image principale
+    if (imageWrapper && mainImage) {
+        imageWrapper.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const percentX = (x - centerX) / centerX;
+            const percentY = (y - centerY) / centerY;
+            
+            const moveX = percentX * 20;
+            const moveY = percentY * 20;
+            
+            mainImage.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
+        });
+        
+        imageWrapper.addEventListener('mouseleave', function() {
+            mainImage.style.transform = 'translate(0, 0) scale(1)';
+        });
+    }
+    
+    // Animation du prix qui compte
+    const priceElement = document.querySelector('.product-price');
+    if (priceElement) {
+        const priceText = priceElement.childNodes[0].textContent.trim();
+        const targetPrice = parseInt(priceText.replace(/[^0-9]/g, ''));
+        
+        if (!isNaN(targetPrice)) {
+            let currentPrice = 0;
+            const duration = 1500;
+            const increment = targetPrice / (duration / 16);
+            
+            const countUp = () => {
+                currentPrice += increment;
+                if (currentPrice < targetPrice) {
+                    priceElement.childNodes[0].textContent = Math.floor(currentPrice) + ',00 ';
+                    requestAnimationFrame(countUp);
+                } else {
+                    priceElement.childNodes[0].textContent = priceText + ' ';
+                }
+            };
+            
+            // Démarrer après un délai
+            setTimeout(() => {
+                const priceObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            countUp();
+                            priceObserver.unobserve(entry.target);
+                        }
+                    });
+                });
+                
+                priceObserver.observe(priceElement);
+            }, 500);
+        }
+    }
+    
+    // Effet de typing sur la description
+    const descriptionText = document.querySelector('.description-text');
+    if (descriptionText) {
+        const originalText = descriptionText.textContent;
+        descriptionText.textContent = '';
+        let charIndex = 0;
+        
+        const descObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const typingInterval = setInterval(() => {
+                        if (charIndex < originalText.length) {
+                            descriptionText.textContent += originalText.charAt(charIndex);
+                            charIndex++;
+                        } else {
+                            clearInterval(typingInterval);
+                        }
+                    }, 20);
+                    descObserver.unobserve(entry.target);
+                }
+            });
+        });
+        
+        descObserver.observe(descriptionText);
+    }
+    
+    // Badge animation au scroll
+    const badge = document.querySelector('.product-badge');
+    if (badge) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rotation = scrolled * 0.2;
+            badge.style.transform = `rotate(${rotation}deg)`;
+        });
+    }
+    
+    // Feature items hover effect avancé
+    const featureItems = document.querySelectorAll('.feature-item');
+    featureItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            featureItems.forEach(other => {
+                if (other !== this) {
+                    other.style.opacity = '0.5';
+                    other.style.transform = 'scale(0.95)';
+                }
+            });
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            featureItems.forEach(other => {
+                other.style.opacity = '1';
+                other.style.transform = 'scale(1)';
+            });
+        });
+    });
+    
+    // Animation des features au scroll
+    const featuresObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.opacity = '0';
+                    entry.target.style.transform = 'translateY(20px)';
+                    entry.target.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+                featuresObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    featureItems.forEach(item => featuresObserver.observe(item));
+    
+    // Stock indicator pulse animation
+    const stockInfo = document.querySelector('.stock-info');
+    if (stockInfo && stockInfo.classList.contains('in-stock')) {
+        setInterval(() => {
+            stockInfo.style.animation = 'none';
+            setTimeout(() => {
+                stockInfo.style.animation = 'pulse 2s ease-in-out';
+            }, 10);
+        }, 3000);
+    }
+    
+    const pulseStyle = document.createElement('style');
+    pulseStyle.textContent = `
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+    `;
+    document.head.appendChild(pulseStyle);
+    
+    // Ripple effect sur les boutons
+    const buttons = document.querySelectorAll('.add-to-cart-btn, .view-btn, .qty-btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.style.cssText = `
+                position: absolute;
+                left: ${x}px;
+                top: ${y}px;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                transform: translate(-50%, -50%);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+    
+    const rippleStyle = document.createElement('style');
+    rippleStyle.textContent = `
+        @keyframes ripple {
+            to {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(rippleStyle);
+    
+    // Smooth scroll vers les related products
+    const relatedSection = document.querySelector('.related-section');
+    if (relatedSection) {
+        const scrollIndicator = document.createElement('div');
+        scrollIndicator.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 1000;
+            font-size: 20px;
+        `;
+        scrollIndicator.innerHTML = '<i class="fas fa-arrow-down"></i>';
+        document.body.appendChild(scrollIndicator);
+        
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const relatedTop = relatedSection.offsetTop;
+            
+            if (scrolled < relatedTop - window.innerHeight && scrolled > 300) {
+                scrollIndicator.style.opacity = '1';
+            } else {
+                scrollIndicator.style.opacity = '0';
+            }
+        });
+        
+        scrollIndicator.addEventListener('click', () => {
+            relatedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        
+        // Hover effect
+        scrollIndicator.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.1) translateY(-5px)';
+        });
+        
+        scrollIndicator.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1) translateY(0)';
+        });
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Escape pour fermer le zoom
+        if (e.key === 'Escape' && zoomOverlay.classList.contains('active')) {
+            zoomOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // + pour augmenter la quantité
+        if (e.key === '+' && qtyInput) {
+            increaseBtn.click();
+        }
+        
+        // - pour diminuer la quantité
+        if (e.key === '-' && qtyInput) {
+            decreaseBtn.click();
+        }
+    });
+    
+    // Save viewed product to localStorage
+    const productData = {
+        name: document.querySelector('.product-title')?.textContent,
+        price: priceElement?.textContent.trim(),
+        image: mainImage?.src,
+        timestamp: Date.now()
+    };
+    
+    let viewedProducts = JSON.parse(localStorage.getItem('viewedProducts') || '[]');
+    viewedProducts.unshift(productData);
+    viewedProducts = viewedProducts.slice(0, 10); // Garder seulement les 10 derniers
+    localStorage.setItem('viewedProducts', JSON.stringify(viewedProducts));
+    
+    // Loading animation au chargement des images
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        if (!img.complete) {
+            img.style.opacity = '0';
+            img.addEventListener('load', function() {
+                this.style.transition = 'opacity 0.6s ease';
+                this.style.opacity = '1';
+            });
+        }
+    });
+    
+    // Effet de parallax sur le titre au scroll
+    const productTitle = document.querySelector('.product-title');
+    if (productTitle && window.innerWidth > 992) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const opacity = Math.max(1 - (scrolled / 500), 0);
+            const translateY = scrolled * 0.3;
+            productTitle.style.opacity = opacity;
+            productTitle.style.transform = `translateY(${translateY}px)`;
+        });
+    }
+    
+    // Animation de la catégorie
+    const category = document.querySelector('.product-category');
+    if (category) {
+        category.style.opacity = '0';
+        category.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+            category.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            category.style.opacity = '1';
+            category.style.transform = 'translateX(0)';
+        }, 600);
+    }
+    
+    // Console easter egg
+    console.log('%cFashion Store', 'font-size: 48px; font-weight: 200; color: #c9a961; letter-spacing: -2px;');
+    console.log('%cDéveloppé avec élégance ✨', 'font-size: 14px; color: #666666; letter-spacing: 1px;');
+});
+</script>
 {% endblock %}

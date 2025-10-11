@@ -1,41 +1,502 @@
 {% extends 'store/base.html' %}
-{% block title %}Mon Panier{% endblock %}
+{% load static %}
+
+{% block title %}Panier - Fashion Store{% endblock %}
+
 {% block content %}
-<div class="container" style="margin-top: 40px;">
-    <h1>Mon Panier</h1>
+<style>
+.cart-page {
+    padding-top: 120px;
+    min-height: 100vh;
+    background: #fafafa;
+    padding-bottom: 80px;
+}
+
+.cart-header {
+    text-align: center;
+    margin-bottom: 60px;
+    padding: 0 20px;
+}
+
+.cart-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+.cart-count {
+    font-size: 18px;
+    color: var(--text-light);
+}
+
+.cart-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.cart-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+}
+
+.cart-items-section {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 25px;
+    padding: 30px;
+    border: 2px solid var(--border);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+    border-color: var(--accent);
+}
+
+.item-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+
+.item-placeholder {
+    width: 120px;
+    height: 120px;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: var(--text-light);
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.item-name {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.item-price {
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.item-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #f5f5f5;
+    padding: 10px 15px;
+}
+
+.qty-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: white;
+    color: var(--primary);
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.qty-btn:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.qty-display {
+    min-width: 40px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.item-subtotal {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.remove-btn {
+    padding: 12px 20px;
+    background: #f5f5f5;
+    color: #991b1b;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.remove-btn:hover {
+    background: #fee2e2;
+}
+
+.cart-summary {
+    position: sticky;
+    top: 100px;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.summary-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    font-size: 16px;
+}
+
+.summary-label {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.summary-value {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.free-shipping {
+    color: #166534;
+    font-weight: 600;
+}
+
+.summary-divider {
+    height: 2px;
+    background: var(--border);
+    margin: 20px 0;
+}
+
+.summary-total {
+    padding: 25px 0;
+    border-top: 3px solid var(--primary);
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-label {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+    text-transform: uppercase;
+}
+
+.total-value {
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--accent);
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 20px;
+    background: var(--primary);
+    color: var(--accent);
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.checkout-btn:hover {
+    background: var(--accent);
+    color: var(--primary);
+}
+
+.continue-btn {
+    width: 100%;
+    padding: 16px;
+    background: white;
+    color: var(--text-dark);
+    border: 2px solid var(--border);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.continue-btn:hover {
+    border-color: var(--primary);
+}
+
+.trust-badges {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid var(--border);
+}
+
+.trust-badge {
+    text-align: center;
+    padding: 15px;
+}
+
+.trust-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: var(--accent);
+}
+
+.trust-text {
+    font-size: 11px;
+    color: var(--text-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 100px 20px;
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 100px;
+    color: #ddd;
+    margin-bottom: 25px;
+}
+
+.empty-title {
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+}
+
+.empty-text {
+    font-size: 16px;
+    color: var(--text-light);
+    margin-bottom: 35px;
+}
+
+@media (max-width: 992px) {
+    .cart-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cart-summary {
+        position: relative;
+        top: 0;
+    }
+}
+</style>
+
+<div class="cart-page">
+    <div class="cart-header">
+        <h1 class="cart-title">Votre Panier</h1>
+        {% if items %}
+            <p class="cart-count">{{ items|length }} article{{ items|length|pluralize }} dans votre panier</p>
+        {% endif %}
+    </div>
 
     {% if items %}
-        <table class="table table-striped" style="margin-top: 20px;">
-            <thead>
-                <tr>
-                    <th>Produit</th>
-                    <th>Quantité</th>
-                    <th>Prix</th>
-                    <th>Sous-total</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.product.price }} MAD</td>
-                    <td>{{ item.get_subtotal }} MAD</td>
-                    <td>
-                        <a href="{% url 'store:remove_from_cart' item.id %}" class="btn btn-danger btn-sm">Supprimer</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="cart-container">
+            <div class="cart-grid">
+                <div class="cart-items-section">
+                    {% for item in items %}
+                    <div class="cart-item">
+                        <div>
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="item-image">
+                            {% else %}
+                                <div class="item-placeholder">
+                                    <i class="fas fa-tshirt"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="item-details">
+                            <div class="item-header">
+                                <h3 class="item-name">{{ item.product.name }}</h3>
+                                <span class="item-price">{{ item.product.price }} MAD</span>
+                            </div>
+                            
+                            <div class="item-actions">
+                                <form method="post" action="{% url 'store:update_cart' item.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <div class="quantity-controls">
+                                        <button type="submit" name="action" value="decrease" class="qty-btn">−</button>
+                                        <span class="qty-display">{{ item.quantity }}</span>
+                                        <button type="submit" name="action" value="increase" class="qty-btn">+</button>
+                                    </div>
+                                </form>
+                                
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <span class="item-subtotal">{{ item.get_subtotal }} MAD</span>
+                                    <form method="post" action="{% url 'store:update_cart' item.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" name="action" value="remove" class="remove-btn">
+                                            <i class="fas fa-trash"></i> Retirer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
 
-        <h3>Total : {{ total }} MAD</h3>
-        <a href="{% url 'store:checkout' %}" class="btn btn-success">Passer la commande</a>
-
+                <div class="cart-summary">
+                    <h2 class="summary-title">Résumé</h2>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">Sous-total</span>
+                        <span class="summary-value">{{ total }} MAD</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">Livraison</span>
+                        <span class="free-shipping">Gratuite</span>
+                    </div>
+                    
+                    <div class="summary-divider"></div>
+                    
+                    <div class="summary-total">
+                        <span class="total-label">Total</span>
+                        <span class="total-value">{{ total }} MAD</span>
+                    </div>
+                    
+                    <a href="{% url 'store:checkout' %}" class="checkout-btn">
+                        <i class="fas fa-check"></i>
+                        Commander
+                    </a>
+                    
+                    <a href="{% url 'store:product_list' %}" class="continue-btn">
+                        ← Continuer mes achats
+                    </a>
+                    
+                    <div class="trust-badges">
+                        <div class="trust-badge">
+                            <div class="trust-icon"><i class="fas fa-lock"></i></div>
+                            <div class="trust-text">Sécurisé</div>
+                        </div>
+                        <div class="trust-badge">
+                            <div class="trust-icon"><i class="fas fa-truck"></i></div>
+                            <div class="trust-text">Livraison</div>
+                        </div>
+                        <div class="trust-badge">
+                            <div class="trust-icon"><i class="fas fa-undo"></i></div>
+                            <div class="trust-text">Retours</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% else %}
-        <p>Votre panier est vide.</p>
-        <a href="{% url 'store:product_list' %}" class="btn btn-primary">Voir les produits</a>
+        <div class="cart-container">
+            <div class="empty-cart">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h3 class="empty-title">Votre panier est vide</h3>
+                <p class="empty-text">Découvrez notre collection et ajoutez vos articles préférés</p>
+                <a href="{% url 'store:product_list' %}" class="checkout-btn" style="max-width: 300px; margin: 0 auto;">
+                    Découvrir la boutique
+                </a>
+            </div>
+        </div>
     {% endif %}
+</div>
+{% endblock %}.5) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 60px;">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                    {% endif %}
+                    <div class="product-overlay">
+                        <a href="{% url 'store:product_detail' product.slug %}" class="btn-view">
+                            Voir Détails
+                        </a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">{{ product.category.name }}</div>
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-price">{{ product.price }} MAD</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3 class="empty-title">Aucun produit trouvé</h3>
+                <p class="empty-text">Essayez une autre recherche ou explorez notre collection complète</p>
+                <a href="{% url 'store:product_list' %}" class="btn-search">
+                    Voir tous les produits
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}
